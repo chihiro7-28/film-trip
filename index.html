@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="男旅">
 <meta name="theme-color" content="#0a0500">
@@ -142,6 +143,37 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
   }
   .hint-card{padding:12px 14px;}
   .strip{height:22px !important;}
+}
+
+/* ===== カメラ画面: 横向き専用レイアウト =====
+   iPhone純正カメラと同じように、シャッターボタンを右端、
+   フラッシュ・カメラ切替ボタンを左端に縦並びで配置する。 */
+@media (orientation: landscape) and (max-height: 500px) {
+  #camera .cam-top{
+    top:0;bottom:0;left:0;right:auto;
+    width:56px;height:auto;
+    flex-direction:column;
+    padding:20px 0;
+  }
+  #camera .cam-title{
+    writing-mode:vertical-rl;
+    text-orientation:mixed;
+  }
+  #camera .cam-bottom{
+    top:0;bottom:0;left:auto;right:0;
+    width:110px;height:auto;
+    flex-direction:column;
+    gap:16px;
+  }
+  #camera .cam-counter{font-size:11px;}
+  #camera .capture-thumb{
+    bottom:auto;left:auto;
+    top:16px;right:34px;
+    transform:scale(0.3);
+  }
+  #camera .capture-thumb.show{
+    transform:scale(1.15);
+  }
 }
 .hint-card{
   width:100%;
@@ -589,6 +621,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
   <!-- 上部バー -->
   <div class="cam-top">
+    <button class="cam-ctrl-btn" onclick="goToHome()">✕</button>
     <button class="cam-ctrl-btn" id="flashBtn" onclick="toggleFlash()">
       <span id="flashIcon">⚡</span>
       <div class="flash-off-line" id="flashLine" style="display:none"></div>
@@ -930,6 +963,16 @@ async function startCamera() {
   } catch(e) {
     alert('カメラの起動に失敗しました。カメラへのアクセスを許可してください。');
   }
+}
+
+// カメラを撮影中に途中で閉じてスタート画面に戻る。
+// カメラを起動したままにしないよう、必ずストリームを止めてから遷移する。
+function goToHome() {
+  if (currentStream) {
+    currentStream.getTracks().forEach(t => t.stop());
+    currentStream = null;
+  }
+  showScreen('splash');
 }
 
 function flipCamera() {
