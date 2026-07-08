@@ -52,17 +52,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
 /* コーナー・フレーム番号 */
 .corner{position:absolute;width:20px;height:20px;border-color:var(--orange);border-style:solid;z-index:25;}
-.corner.tl{top:calc(clamp(36px,6vw,52px) + 10px);left:14px;border-width:2px 0 0 2px;}
-.corner.tr{top:calc(clamp(36px,6vw,52px) + 10px);right:14px;border-width:2px 2px 0 0;}
-.corner.bl{bottom:calc(clamp(36px,6vw,52px) + 10px);left:14px;border-width:0 0 2px 2px;}
-.corner.br{bottom:calc(clamp(36px,6vw,52px) + 10px);right:14px;border-width:0 2px 2px 0;}
+.corner.tl{top:14px;left:14px;border-width:2px 0 0 2px;}
+.corner.tr{top:14px;right:14px;border-width:2px 2px 0 0;}
+.corner.bl{bottom:14px;left:14px;border-width:0 0 2px 2px;}
+.corner.br{bottom:14px;right:14px;border-width:0 2px 2px 0;}
 .fnum{
   position:absolute;font-family:'Space Mono',monospace;
   font-size:clamp(8px,1.5vw,10px);letter-spacing:2px;
   color:var(--orange-dim);z-index:25;
 }
-.fnum.tl{top:calc(clamp(36px,6vw,52px) + 6px);left:32px;}
-.fnum.tr{top:calc(clamp(36px,6vw,52px) + 6px);right:32px;}
+.fnum.tl{top:18px;left:32px;}
+.fnum.tr{top:18px;right:32px;}
 
 /* ===== 起動画面 ===== */
 #splash{position:relative;height:100%;}
