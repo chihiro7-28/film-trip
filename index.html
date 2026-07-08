@@ -346,6 +346,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 }
 .dash-gallery{
   width:100%;
+  display:flex;flex-direction:column;
+  gap:16px;
+}
+.dash-gallery-group-name{
+  width:100%;
+  font-family:'Space Mono',monospace;
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  color:var(--orange);
+  padding-bottom:6px;
+  margin-bottom:2px;
+  border-bottom:1px solid rgba(232,160,32,0.25);
+  text-align:left;
+}
+.dash-gallery-grid{
+  width:100%;
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(56px,1fr));
   gap:4px;
@@ -367,17 +382,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
   font-size:11px;letter-spacing:1px;
   color:rgba(255,255,255,0.35);
   text-align:center;padding:20px 0;
-}
-.dash-gallery-name{
-  position:absolute;left:0;right:0;bottom:0;
-  background:linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0));
-  color:#fff;
-  font-family:'Space Mono',monospace;
-  font-size:8px;letter-spacing:0.5px;
-  text-align:center;
-  padding:6px 2px 3px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  pointer-events:none;
 }
 
 /* ===== 管理者ダッシュボード ===== */
@@ -1289,7 +1293,7 @@ function updateDashStats() {
 }
 
 // 管理画面に、今までに集まった写真をサムネイルで一覧表示する。
-// タップするとGoogleドライブ上のオリジナル画質を新しいタブで開く。
+// タップはGoogleドライブ上のオリジナル画質を新しいタブで開く。
 function renderDashGallery() {
   const gallery = document.getElementById('dashGallery');
   if (!gallery) return;
@@ -1299,24 +1303,47 @@ function renderDashGallery() {
     return;
   }
 
-  const sorted = mosaicData.slice().sort((a, b) => a.index - b.index);
+  // 撮影者ごとにフォルダ分けする(名前未設定は最後にまとめる)
+  const groups = {};
+  mosaicData.forEach(item => {
+    const key = item.userName && item.userName.trim() ? item.userName.trim() : '(名前未設定)';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  });
+
+  const names = Object.keys(groups).sort((a, b) => {
+    if (a === '(名前未設定)') return 1;
+    if (b === '(名前未設定)') return -1;
+    return a.localeCompare(b, 'ja');
+  });
+
   gallery.innerHTML = '';
-  sorted.forEach(item => {
-    const fig = document.createElement('div');
-    fig.className = 'dash-gallery-item';
-    const img = document.createElement('img');
-    img.src = item.dataUrl;
-    img.loading = 'lazy';
-    img.alt = 'マス' + item.index;
-    fig.appendChild(img);
-    if (item.userName) {
-      const label = document.createElement('span');
-      label.className = 'dash-gallery-name';
-      label.textContent = item.userName;
-      fig.appendChild(label);
-    }
-    fig.addEventListener('click', () => openPhotoDetail_(item.index));
-    gallery.appendChild(fig);
+  names.forEach(name => {
+    const photos = groups[name].slice().sort((a, b) => a.index - b.index);
+
+    const section = document.createElement('div');
+    section.className = 'dash-gallery-group';
+
+    const header = document.createElement('div');
+    header.className = 'dash-gallery-group-name';
+    header.textContent = name + '（' + photos.length + '枚）';
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'dash-gallery-grid';
+    photos.forEach(item => {
+      const fig = document.createElement('div');
+      fig.className = 'dash-gallery-item';
+      const img = document.createElement('img');
+      img.src = item.dataUrl;
+      img.loading = 'lazy';
+      img.alt = 'マス' + item.index;
+      fig.appendChild(img);
+      fig.addEventListener('click', () => openPhotoDetail_(item.index));
+      grid.appendChild(fig);
+    });
+    section.appendChild(grid);
+    gallery.appendChild(section);
   });
 }
 
