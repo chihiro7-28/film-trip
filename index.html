@@ -38,10 +38,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
 /* フィルムストリップ */
 .strip{
-  flex-shrink:0;
-  height:clamp(36px,6vw,52px);
-  background:rgba(8,4,0,0.97);
-  display:flex;align-items:center;z-index:30;
+  display:none;
 }
 .strip.top{border-bottom:1px solid rgba(232,160,32,0.15);}
 .strip.bot{border-top:1px solid rgba(232,160,32,0.15);}
@@ -128,22 +125,27 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
    PCのブラウザは常に縦長に収まる制限が別途かかっているため、
    ここは実際にスマホ・タブレットを横向きにしたときだけ効く。 */
 @media (orientation: landscape) and (max-height: 500px) {
+  /* タッチ判定(pointer:fine/coarse)がうまく効かない端末でも、
+     横向きで画面が低い時は必ず画面幅いっぱいに広げる(保険) */
+  .app, .host-popup-overlay{
+    max-width:none !important;
+  }
   .corner{
     width:26px;height:26px;
   }
-  .corner.tl, .corner.bl{ left:6px; }
-  .corner.tr, .corner.br{ right:6px; }
+  .corner.tl, .corner.bl{ left:4px; }
+  .corner.tr, .corner.br{ right:4px; }
   .title-block{
     top:50%;left:0;right:auto;
     width:58%;
-    padding-left:52px;
+    padding-left:40px;
     box-sizing:border-box;
     transform:translateY(-50%);
     align-items:center;text-align:center;
   }
   .bottom-area{
     top:50%;bottom:auto;
-    left:auto;right:52px;
+    left:auto;right:40px;
     width:36%;
     transform:translateY(-50%);
     gap:10px;
