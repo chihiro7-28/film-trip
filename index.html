@@ -985,7 +985,11 @@ async function startCamera() {
   if (currentStream) currentStream.getTracks().forEach(t => t.stop());
   try {
     currentStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode, width: { ideal: 1920 }, height: { ideal: 1920 } },
+      // 幅・高さを同じ値で強制すると、スマホ本来の縦長比率が無視されて
+      // 不自然な正方形に切り取られてしまうため、幅だけを指定して
+      // 縦横比は端末の自然な形のまま、より高画質(理想2560px)で取得する。
+      // モザイク用の正方形サムネイルは撮影後に別途切り出して作る。
+      video: { facingMode, width: { ideal: 2560 } },
       audio: false
     });
     document.getElementById('video').srcObject = currentStream;
