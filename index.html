@@ -18,6 +18,58 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 
+/* ===== 起動時のフィルムローディング演出 =====
+   ページを開いた瞬間だけ表示し、少し経ったら
+   フェードアウトしてスタート画面が現れる。タップでも即スキップできる。 */
+.intro-loader{
+  position:fixed;inset:0;
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:22px;
+  z-index:9999;
+  transition:opacity 0.5s ease;
+}
+.intro-loader.hide{
+  opacity:0;
+  pointer-events:none;
+}
+.intro-reel svg{animation:introSpin 1.2s linear infinite;}
+@keyframes introSpin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+.intro-text{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:5px;
+  color:var(--orange-dim);
+}
+.intro-dots{
+  display:inline-block;
+  animation:introDots 1.2s steps(4) infinite;
+  overflow:hidden;
+  width:1.2em;
+  vertical-align:bottom;
+}
+@keyframes introDots{
+  0%{width:0;}
+  100%{width:1.2em;}
+}
+.intro-bar{
+  width:120px;height:2px;
+  background:rgba(255,249,240,0.12);
+  border-radius:2px;
+  overflow:hidden;
+}
+.intro-bar-fill{
+  width:0%;height:100%;
+  background:var(--orange);
+  animation:introBarFill 1.5s ease forwards;
+}
+@keyframes introBarFill{
+  from{width:0%;}
+  to{width:100%;}
+}
+
 /* スマホ縦画面に最適化したコンテナ */
 .app{
   position:relative;
@@ -569,6 +621,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 </style>
 </head>
 <body>
+<div class="intro-loader" id="introLoader">
+  <div class="intro-reel">
+    <svg viewBox="0 0 100 100" width="72" height="72">
+      <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(232,160,32,0.25)" stroke-width="4"/>
+      <circle cx="50" cy="50" r="44" fill="none" stroke="var(--orange)" stroke-width="4"
+              stroke-dasharray="60 210" stroke-linecap="round"/>
+      <circle cx="50" cy="18" r="7" fill="var(--orange-dim)"/>
+      <circle cx="78" cy="62" r="7" fill="var(--orange-dim)"/>
+      <circle cx="22" cy="62" r="7" fill="var(--orange-dim)"/>
+      <circle cx="50" cy="50" r="6" fill="var(--orange)"/>
+    </svg>
+  </div>
+  <div class="intro-text">FILM LOADING<span class="intro-dots">...</span></div>
+  <div class="intro-bar"><div class="intro-bar-fill"></div></div>
+</div>
 <div class="app">
 
 <!-- ===== 起動画面 ===== -->
@@ -1400,6 +1467,23 @@ buildMosaic();
 startGrain();
 startMosaicSync();
 if (userName) document.getElementById('nameInput').value = userName;
+
+// 起動時のフィルムローディング演出を一定時間後にフェードアウトする。
+// タップ/クリックされたら即座にスキップできるようにする。
+(function initIntroLoader() {
+  const loader = document.getElementById('introLoader');
+  if (!loader) return;
+  let hidden = false;
+  function hideLoader() {
+    if (hidden) return;
+    hidden = true;
+    loader.classList.add('hide');
+    setTimeout(() => { loader.style.display = 'none'; }, 500);
+  }
+  setTimeout(hideLoader, 1600);
+  loader.addEventListener('click', hideLoader);
+  loader.addEventListener('touchstart', hideLoader, { passive: true });
+})();
 </script>
 </body>
 </html>
