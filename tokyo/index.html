@@ -276,6 +276,22 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 }
 .host-crown-btn:active{background:rgba(232,160,32,0.3);}
 
+.lang-toggle-btn{
+  position:absolute;
+  top:48px;right:14px;
+  z-index:26;
+  background:rgba(232,160,32,0.15);
+  border:1px solid rgba(232,160,32,0.4);
+  color:var(--orange);
+  font-family:'Space Mono',monospace;
+  font-size:10px;font-weight:700;letter-spacing:1px;
+  padding:5px 11px;
+  border-radius:20px;
+  cursor:pointer;
+  transition:background 0.15s,transform 0.1s;
+}
+.lang-toggle-btn:active{transform:scale(0.92);background:rgba(232,160,32,0.3);}
+
 /* ===== 名前入力 ===== */
 #namescreen{background:var(--bg);justify-content:center;align-items:center;}
 .name-inner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:40px;}
@@ -699,6 +715,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
   <div class="corner bl anim d1"></div><div class="corner br anim d1"></div>
   <div class="fnum tl anim d1">FILM TRIP TOKYO</div>
   <div class="fnum tr anim d1">07 / 15</div>
+  <button class="lang-toggle-btn anim d1" id="langToggleBtn" onclick="toggleLang()">EN</button>
 
   <div class="title-block">
     <div class="title-jp anim d3">東京観光</div>
@@ -711,17 +728,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
     <div class="hint-card anim d6">
       <div class="hint-row">
         <span class="hint-icon">📷</span>
-        <div class="hint-text">このフィルムは <b>1人20枚</b> 撮れます</div>
+        <div class="hint-text" id="hintText1">このフィルムは <b>1人20枚</b> 撮れます</div>
       </div>
       <div class="hint-divider"></div>
       <div class="hint-row">
         <span class="hint-icon">🔒</span>
-        <div class="hint-text">撮った写真はすぐには見られません<br><b>ホストが解禁</b> するまでお楽しみに</div>
+        <div class="hint-text" id="hintText2">撮った写真はすぐには見られません<br><b>ホストが解禁</b> するまでお楽しみに</div>
       </div>
       <div class="hint-divider"></div>
       <div class="hint-row">
         <span class="hint-icon">🎞️</span>
-        <div class="hint-text">現在 <b id="splash-count">0</b> / 120 枚撮影済み</div>
+        <div class="hint-text"><span id="hintCountPrefix">現在</span> <b id="splash-count">0</b> <span id="hintCountSuffix">/ 120 枚撮影済み</span></div>
       </div>
     </div>
     <div class="btn-row anim d7">
@@ -744,9 +761,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
     <div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div>
   </div>
   <div class="name-inner">
-    <div class="name-title">名前を入力してください</div>
+    <div class="name-title" id="nameTitleText">名前を入力してください</div>
     <input class="name-input" id="nameInput" type="text" placeholder="TARO" maxlength="12" autocomplete="off">
-    <button class="name-btn" id="nameBtn">カメラを起動 →</button>
+    <button class="name-btn" id="nameBtn"><span id="nameBtnText">カメラを起動 →</span></button>
   </div>
   <div class="strip bot">
     <div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div>
@@ -781,7 +798,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
   <!-- 下部バー -->
   <div class="cam-bottom">
-    <div class="cam-counter"><span id="cam-count">0</span> / 20 枚撮影済み</div>
+    <div class="cam-counter"><span id="cam-count">0</span> <span id="camCounterSuffix">/ 20 枚撮影済み</span></div>
     <div class="shutter-area">
       <button class="shutter-btn" id="shutterBtn"></button>
     </div>
@@ -793,8 +810,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 <canvas id="photoCanvas" style="display:none"></canvas>
 <div class="film-full" id="filmFull">
   <div class="big">🎞️</div>
-  <p>フィルムがいっぱいです<br>お疲れ様でした！</p>
-  <p style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:8px;">ホストが現像します</p>
+  <p id="filmFullText1">フィルムがいっぱいです<br>お疲れ様でした！</p>
+  <p id="filmFullText2" style="font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-top:8px;">ホストが現像します</p>
 </div>
 
 </div><!-- /.app -->
@@ -850,7 +867,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 <script>
 // ⚠️ ここを東京観光用に新しくデプロイしたGASの exec URL に貼り替えること。
 // 山中湖用のURLのままだと、写真が山中湖のDriveフォルダに混ざってしまうので要注意。
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwstzYrrf57aCLtwNazi_COjNXTlBHqqbU1jQhfRoKQ7vvv6Y5rQh-Nl7gZazpshKz6/exec';
+const GAS_URL = 'ここに東京観光用のGAS_URLを貼る';
 const MAX_SHOTS = 20;          // 1人あたりの撮影可能枚数
 const TOTAL_CELLS = 120;       // MAX_SHOTS(20) × 参加人数(6人) = 120
 const THUMB_SIZE = 160;
@@ -867,6 +884,88 @@ let isProcessing = false;
 let driveFolderUrlFromServer = '';
 let syncTimer = null;
 let latestPhotoMetaByIndex = {};
+
+/* ==========================================================================
+   多言語対応(参加者向け画面のみ日本語/英語を切替)
+   ------------------------------------------------------------------------
+   いとこ(アメリカから観光で参加)のためにEN表示を用意。ホスト用の管理画面は
+   日本人ホストしか使わないため翻訳対象から外し、実装コストを抑えている。
+   サーバー(GAS)からのエラーメッセージ(result.message)は日本語のまま返る
+   ため、それはフォールバックの定型英語メッセージに置き換えて表示する。
+   ========================================================================== */
+const TRANSLATIONS = {
+  ja: {
+    hint1: 'このフィルムは <b>1人' + MAX_SHOTS + '枚</b> 撮れます',
+    hint2: '撮った写真はすぐには見られません<br><b>ホストが解禁</b> するまでお楽しみに',
+    hintCountPrefix: '現在',
+    hintCountSuffix: (total) => '/ ' + total + ' 枚撮影済み',
+    nameTitle: '名前を入力してください',
+    nameBtn: 'カメラを起動 →',
+    camCounterSuffix: (max) => '/ ' + max + ' 枚撮影済み',
+    filmWarningRemaining: (remaining) => 'FILM RUNNING OUT — 残り' + remaining + '枚',
+    filmFullText1: 'フィルムがいっぱいです<br>お疲れ様でした！',
+    filmFullText2: 'ホストが現像します',
+    cameraError: 'カメラの起動に失敗しました。カメラへのアクセスを許可してください。',
+    sendError: '送信に失敗しました',
+    captureError: '撮影中に問題が発生しました。もう一度シャッターを押してみてください',
+    langToggleLabel: 'EN'
+  },
+  en: {
+    hint1: 'This roll holds <b>' + MAX_SHOTS + ' shots</b> per person',
+    hint2: "Your shots stay hidden until<br>the <b>host develops</b> the film",
+    hintCountPrefix: 'So far',
+    hintCountSuffix: (total) => '/ ' + total + ' photos taken',
+    nameTitle: 'Enter your name',
+    nameBtn: 'Start Camera →',
+    camCounterSuffix: (max) => '/ ' + max + ' photos taken',
+    filmWarningRemaining: (remaining) => 'FILM RUNNING OUT — ' + remaining + ' left',
+    filmFullText1: "That's a wrap!<br>Film roll complete",
+    filmFullText2: 'The host will develop it soon',
+    cameraError: 'Could not start the camera. Please allow camera access.',
+    sendError: 'Failed to send the photo. Please try again.',
+    captureError: 'Something went wrong while capturing. Please try the shutter again.',
+    langToggleLabel: '日本語'
+  }
+};
+
+// 初回は保存済みの選択があればそれを、無ければ端末の言語設定から推測する
+let lang = 'ja';
+try {
+  const savedLang = localStorage.getItem('filmtrip_lang');
+  if (savedLang === 'ja' || savedLang === 'en') {
+    lang = savedLang;
+  } else if (typeof navigator !== 'undefined' && navigator.language && navigator.language.toLowerCase().indexOf('en') === 0) {
+    lang = 'en';
+  }
+} catch (e) { /* localStorage不可の環境でも日本語表示で続行できるので無視 */ }
+
+// 参加者向け画面の文言を現在の言語設定で一括更新する
+function applyLanguage() {
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.ja;
+
+  const setHtml = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+  setHtml('hintText1', t.hint1);
+  setHtml('hintText2', t.hint2);
+  setText('hintCountPrefix', t.hintCountPrefix);
+  setText('hintCountSuffix', t.hintCountSuffix(TOTAL_CELLS));
+  setText('nameTitleText', t.nameTitle);
+  setText('nameBtnText', t.nameBtn);
+  setText('camCounterSuffix', t.camCounterSuffix(MAX_SHOTS));
+  setHtml('filmFullText1', t.filmFullText1);
+  setText('filmFullText2', t.filmFullText2);
+  setText('langToggleBtn', t.langToggleLabel);
+
+  // 残数警告バナーが表示中なら、その場で文言も切り替える
+  updateFilmWarning();
+}
+
+function toggleLang() {
+  lang = lang === 'ja' ? 'en' : 'ja';
+  try { localStorage.setItem('filmtrip_lang', lang); } catch (e) { /* 保存できなくても表示切替自体は継続できる */ }
+  applyLanguage();
+}
 
 function loadState() {
   try {
@@ -1291,7 +1390,8 @@ function updateFilmWarning() {
   const remaining = MAX_SHOTS - shotCount;
 
   if (remaining > 0 && remaining <= REMAINING_WARNING_THRESHOLD) {
-    if (textEl) textEl.textContent = 'FILM RUNNING OUT — 残り' + remaining + '枚';
+    const t = TRANSLATIONS[lang] || TRANSLATIONS.ja;
+    if (textEl) textEl.textContent = t.filmWarningRemaining(remaining);
     banner.classList.add('show');
     countEl.classList.add('warning');
     if (!filmWarningPlayed) {
@@ -1318,7 +1418,7 @@ async function startCamera() {
     });
     document.getElementById('video').srcObject = currentStream;
   } catch(e) {
-    alert('カメラの起動に失敗しました。カメラへのアクセスを許可してください。');
+    alert((TRANSLATIONS[lang] || TRANSLATIONS.ja).cameraError);
   }
 }
 
@@ -1412,13 +1512,16 @@ async function takePhoto() {
       document.getElementById('cam-count').textContent = shotCount;
       saveState();
       updateFilmWarning();
-      alert((result && result.message) || '送信に失敗しました');
+      const t = TRANSLATIONS[lang] || TRANSLATIONS.ja;
+      // サーバー(GAS)のエラーメッセージは日本語固定で返ってくるため、
+      // 英語表示中はそれをそのまま出さず、常に翻訳済みの汎用メッセージにする
+      alert(lang === 'ja' ? ((result && result.message) || t.sendError) : t.sendError);
     }
   } catch (err) {
     // ここに来るのは想定外のバグ。ボタンが固まったままにならないよう、
     // 必ずfinallyで解除しつつ、原因調査用にコンソールへ記録する。
     console.error('撮影処理で予期しないエラー:', err);
-    alert('撮影中に問題が発生しました。もう一度シャッターを押してみてください');
+    alert((TRANSLATIONS[lang] || TRANSLATIONS.ja).captureError);
   } finally {
     setTimeout(() => {
       isProcessing = false;
@@ -1710,6 +1813,7 @@ loadState();
 buildMosaic();
 startGrain();
 startMosaicSync();
+applyLanguage();
 if (userName) document.getElementById('nameInput').value = userName;
 
 // 起動時のフィルムローディング演出を一定時間後にフェードアウトする。
