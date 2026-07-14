@@ -711,7 +711,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
     <div class="hint-card anim d6">
       <div class="hint-row">
         <span class="hint-icon">📷</span>
-        <div class="hint-text">このフィルムは <b>1人15枚</b> 撮れます</div>
+        <div class="hint-text">このフィルムは <b>1人20枚</b> 撮れます</div>
       </div>
       <div class="hint-divider"></div>
       <div class="hint-row">
@@ -721,7 +721,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
       <div class="hint-divider"></div>
       <div class="hint-row">
         <span class="hint-icon">🎞️</span>
-        <div class="hint-text">現在 <b id="splash-count">0</b> / 90 枚撮影済み</div>
+        <div class="hint-text">現在 <b id="splash-count">0</b> / 120 枚撮影済み</div>
       </div>
     </div>
     <div class="btn-row anim d7">
@@ -781,7 +781,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
   <!-- 下部バー -->
   <div class="cam-bottom">
-    <div class="cam-counter"><span id="cam-count">0</span> / 15 枚撮影済み</div>
+    <div class="cam-counter"><span id="cam-count">0</span> / 20 枚撮影済み</div>
     <div class="shutter-area">
       <button class="shutter-btn" id="shutterBtn"></button>
     </div>
@@ -851,8 +851,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 // ⚠️ ここを東京観光用に新しくデプロイしたGASの exec URL に貼り替えること。
 // 山中湖用のURLのままだと、写真が山中湖のDriveフォルダに混ざってしまうので要注意。
 const GAS_URL = 'ここに東京観光用のGAS_URLを貼る';
-const MAX_SHOTS = 15;          // 1人あたりの撮影可能枚数(半日観光なので山中湖より少なめに設定)
-const TOTAL_CELLS = 90;        // MAX_SHOTS(15) × 参加人数(6人) = 90
+const MAX_SHOTS = 20;          // 1人あたりの撮影可能枚数
+const TOTAL_CELLS = 120;       // MAX_SHOTS(20) × 参加人数(6人) = 120
 const THUMB_SIZE = 160;
 const THUMB_QUALITY = 0.55;
 const SYNC_INTERVAL_MS = 7000;
