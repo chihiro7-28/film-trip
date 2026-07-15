@@ -677,6 +677,28 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 .anim{opacity:0;animation:fadeUp 0.6s forwards;}
 .d1{animation-delay:1.4s;}.d2{animation-delay:1.7s;}.d3{animation-delay:1.9s;}
 .d4{animation-delay:2.1s;}.d5{animation-delay:2.3s;}.d6{animation-delay:2.5s;}.d7{animation-delay:2.7s;}
+
+/* ===== タイトルだけ「テンプレ感」を消すためのパンチの効いた登場演出 =====
+   他の要素(.anim)は控えめなフェードアップのままにして、
+   メインタイトルだけ拡大→バウンドで飛び込んでくるようにして目を引かせる */
+@keyframes titlePunch{
+  0%{opacity:0; transform:scale(1.6) rotate(-5deg);}
+  50%{opacity:1; transform:scale(0.9) rotate(2deg);}
+  72%{transform:scale(1.06) rotate(-1deg);}
+  100%{opacity:1; transform:scale(1) rotate(0deg);}
+}
+.title-jp.anim{
+  animation: titlePunch 0.85s cubic-bezier(.22,.68,.29,1.5) 1.9s both;
+}
+@keyframes lineSwipe{
+  0%{width:0; opacity:0.3;}
+  60%{width:64px; opacity:1;}
+  100%{width:50px; opacity:1;}
+}
+.title-line.anim{
+  width:0;
+  animation: lineSwipe 0.5s ease-out 2.15s forwards;
+}
 </style>
 </head>
 <body>
@@ -714,7 +736,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
   <div class="corner tl anim d1"></div><div class="corner tr anim d1"></div>
   <div class="corner bl anim d1"></div><div class="corner br anim d1"></div>
   <div class="fnum tl anim d1">FILM TRIP TOKYO</div>
-  <div class="fnum tr anim d1">07 / 15</div>
+  <div class="fnum tr anim d1">07 / 16</div>
   <button class="lang-toggle-btn anim d1" id="langToggleBtn" onclick="toggleLang()">EN</button>
 
   <div class="title-block">
