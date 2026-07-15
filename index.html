@@ -151,18 +151,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
   font-size:clamp(48px,13vw,72px);font-weight:700;
   color:#fff;letter-spacing:12px;line-height:1;
   text-shadow:0 4px 32px rgba(0,0,0,0.9);
+  margin-right:-12px;
 }
 .title-en{
   font-family:'Space Mono',monospace;
   font-size:clamp(12px,3.2vw,16px);letter-spacing:5px;
   color:rgba(255,210,120,0.95);margin-top:12px;
   text-shadow:0 2px 12px rgba(0,0,0,0.9);
+  margin-right:-5px;
 }
 .title-line{width:50px;height:1px;background:linear-gradient(to right,transparent,var(--orange),transparent);margin:20px auto;}
 .title-meta{
   font-family:'Space Mono',monospace;
   font-size:clamp(11px,2.8vw,14px);letter-spacing:2px;
   color:rgba(255,255,255,0.85);text-shadow:0 1px 8px rgba(0,0,0,0.9);
+  margin-right:-2px;
 }
 
 /* ヒント+ボタン */
@@ -244,8 +247,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 .hint-card{
   width:100%;
   background:rgba(0,0,0,0.52);border:1px solid rgba(232,160,32,0.25);
-  padding:14px 20px;display:flex;flex-direction:column;gap:10px;
+  padding:14px 20px;display:flex;justify-content:center;
 }
+.hint-rows{display:flex;flex-direction:column;gap:10px;}
 .hint-row{display:flex;align-items:flex-start;gap:12px;}
 .hint-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
 .hint-text{
@@ -709,19 +713,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;display:flex;al
 
   <div class="bottom-area">
     <div class="hint-card anim d6">
-      <div class="hint-row">
-        <span class="hint-icon">📷</span>
-        <div class="hint-text">このフィルムは <b>1人20枚</b> 撮れます</div>
-      </div>
-      <div class="hint-divider"></div>
-      <div class="hint-row">
-        <span class="hint-icon">🔒</span>
-        <div class="hint-text">撮った写真はすぐには見られません<br><b>ホストが解禁</b> するまでお楽しみに</div>
-      </div>
-      <div class="hint-divider"></div>
-      <div class="hint-row">
-        <span class="hint-icon">🎞️</span>
-        <div class="hint-text">現在 <b id="splash-count">0</b> / 160 枚撮影済み</div>
+      <div class="hint-rows">
+        <div class="hint-row">
+          <span class="hint-icon">📷</span>
+          <div class="hint-text">このフィルムは <b>1人20枚</b> 撮れます</div>
+        </div>
+        <div class="hint-divider"></div>
+        <div class="hint-row">
+          <span class="hint-icon">🔒</span>
+          <div class="hint-text">撮った写真はすぐには見られません<br><b>ホストが解禁</b> するまでお楽しみに</div>
+        </div>
+        <div class="hint-divider"></div>
+        <div class="hint-row">
+          <span class="hint-icon">🎞️</span>
+          <div class="hint-text">現在 <b id="splash-count">0</b> / 160 枚撮影済み</div>
+        </div>
       </div>
     </div>
     <div class="btn-row anim d7">
