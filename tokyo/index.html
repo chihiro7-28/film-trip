@@ -873,7 +873,11 @@ const TOTAL_CELLS = 120;       // MAX_SHOTS(20) × 参加人数(6人) = 120
 const THUMB_SIZE = 160;
 const THUMB_QUALITY = 0.55;
 const SYNC_INTERVAL_MS = 7000;
-const PENDING_QUEUE_KEY = 'filmtrip_pending';
+// ⚠️ 山中湖版(/film-trip/index.html)と東京版(/film-trip/tokyo/index.html)は
+// パスが違うだけで同じオリジン(chihiro7-28.github.io)なので、localStorageの
+// キー名が同じだとデータが混ざる。それを防ぐため東京版だけキーに接頭辞を付ける。
+const STORAGE_PREFIX = 'tokyo_';
+const PENDING_QUEUE_KEY = STORAGE_PREFIX + 'filmtrip_pending';
 // 残りがこの枚数以下になったら「FILM RUNNING OUT」警告を出す
 const REMAINING_WARNING_THRESHOLD = 3;
 
@@ -931,7 +935,7 @@ const TRANSLATIONS = {
 // 初回は保存済みの選択があればそれを、無ければ端末の言語設定から推測する
 let lang = 'ja';
 try {
-  const savedLang = localStorage.getItem('filmtrip_lang');
+  const savedLang = localStorage.getItem(STORAGE_PREFIX + 'filmtrip_lang');
   if (savedLang === 'ja' || savedLang === 'en') {
     lang = savedLang;
   } else if (typeof navigator !== 'undefined' && navigator.language && navigator.language.toLowerCase().indexOf('en') === 0) {
@@ -963,31 +967,31 @@ function applyLanguage() {
 
 function toggleLang() {
   lang = lang === 'ja' ? 'en' : 'ja';
-  try { localStorage.setItem('filmtrip_lang', lang); } catch (e) { /* 保存できなくても表示切替自体は継続できる */ }
+  try { localStorage.setItem(STORAGE_PREFIX + 'filmtrip_lang', lang); } catch (e) { /* 保存できなくても表示切替自体は継続できる */ }
   applyLanguage();
 }
 
 function loadState() {
   try {
-    const m = localStorage.getItem('filmtrip_mosaic');
+    const m = localStorage.getItem(STORAGE_PREFIX + 'filmtrip_mosaic');
     if (m) {
       const parsed = JSON.parse(m);
       // localStorageが壊れている/改ざんされているケースに備え、配列以外は破棄する
       mosaicData = Array.isArray(parsed) ? parsed : [];
     }
-    const c = localStorage.getItem('filmtrip_count');
+    const c = localStorage.getItem(STORAGE_PREFIX + 'filmtrip_count');
     const parsedCount = c ? parseInt(c, 10) : 0;
     // parseIntがNaNを返す壊れた値や、あり得ないマイナス値をガードする
     shotCount = (Number.isFinite(parsedCount) && parsedCount >= 0) ? parsedCount : 0;
-    const n = localStorage.getItem('filmtrip_name');
+    const n = localStorage.getItem(STORAGE_PREFIX + 'filmtrip_name');
     if (n) userName = n;
   } catch(e) {}
 }
 function saveState() {
   try {
-    localStorage.setItem('filmtrip_mosaic', JSON.stringify(mosaicData));
-    localStorage.setItem('filmtrip_count', String(shotCount));
-    localStorage.setItem('filmtrip_name', userName);
+    localStorage.setItem(STORAGE_PREFIX + 'filmtrip_mosaic', JSON.stringify(mosaicData));
+    localStorage.setItem(STORAGE_PREFIX + 'filmtrip_count', String(shotCount));
+    localStorage.setItem(STORAGE_PREFIX + 'filmtrip_name', userName);
   } catch(e) {}
 }
 
@@ -1578,10 +1582,10 @@ async function postPhotoToGAS(payload) {
 }
 
 function getDeviceId() {
-  let id = localStorage.getItem('filmtrip_device');
+  let id = localStorage.getItem(STORAGE_PREFIX + 'filmtrip_device');
   if (!id) {
     id = Math.random().toString(36).slice(2, 10).toUpperCase();
-    localStorage.setItem('filmtrip_device', id);
+    localStorage.setItem(STORAGE_PREFIX + 'filmtrip_device', id);
   }
   return id;
 }
